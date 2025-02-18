@@ -1,0 +1,251 @@
+<html lang="en" class="js wf-newsgothicstd-n4-active wf-poynteroldstyledisplaycon-n4-active wf-active">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> poem</title>
+    <meta name="description"
+        content="Animating SVG text on a path on scroll using the Intersection Observer API and SVG filters.">
+    <meta name="keywords" content="svg text, animation, scroll, svg filter, Intersection Observer">
+    <meta name="author" content="Codrops">
+    <link rel="shortcut icon" href="favicon.2e5f6236.ico">
+    <link rel="stylesheet" href="https://use.typekit.net/rhw1vur.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&family=Astloch:wght@400;700&family=Ballet:opsz@16..72&family=Explora&family=Italiana&family=Pirata+One&family=Rouge+Script&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="poem.css">
+    <script async="" src="//tympanus.net/matomo/matomo.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+    <script>document.documentElement.className = "js";
+
+        var supportsCssVars = function supportsCssVars() {
+            var e,
+                t = document.createElement("style");
+            return t.innerHTML = "root: { --tmp-var: bold; }", document.head.appendChild(t), e = !!(window.CSS && window.CSS.supports && window.CSS.supports("font-weight", "var(--tmp-var)")), t.parentNode.removeChild(t), e;
+        };
+
+        supportsCssVars() || alert("Please view this demo in a modern browser that supports CSS Variables.");</script>
+    <script src="//tympanus.net/codrops/adpacks/analytics.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://tympanus.net/codrops/adpacks/cda.css?1739833099132">
+
+</head>
+
+<body class="" data-new-gr-c-s-check-loaded="14.1223.0" data-gr-ext-installed="" data-new-gr-c-s-loaded="14.1223.0">
+
+    <svg class="hidden">
+        <defs>
+            <filter id="blur" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="0" result="blur" data-min-deviation="0" data-max-deviation="10">
+                </feGaussianBlur>
+                <feMerge>
+                    <feMergeNode in="blur"></feMergeNode>
+                </feMerge>
+            </filter>
+            <filter id="blur2" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur in="SourceAlpha" stdDeviation="0" result="glow" data-min-deviation="0"
+                    data-max-deviation="30"></feGaussianBlur>
+                <feColorMatrix result="bluralpha" type="matrix" values="0 -1 0 0 0 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1.8 0 ">
+                </feColorMatrix>
+                <feOffset in="bluralpha" dx="0.000000" dy="0.000000" result="offsetBlur"></feOffset>
+                <feMerge>
+                    <feMergeNode in="offsetBlur"></feMergeNode>
+                    <feMergeNode in="SourceGraphic"></feMergeNode>
+                </feMerge>
+            </filter>
+            <filter id="distortionFilter">
+                <feTurbulence type="fractalNoise" baseFrequency="0.01 0.03" numOctaves="2" seed="2" stitchTiles="stitch"
+                    x="0%" y="0%" width="100%" height="100%" result="noise"></feTurbulence>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" data-min-scale="0" data-max-scale="100"
+                    xChannelSelector="R" yChannelSelector="B" x="0%" y="0%" width="100%" height="100%"
+                    filterUnits="userSpaceOnUse"></feDisplacementMap>
+            </filter>
+            <filter id="distortionFilter2">
+                <feGaussianBlur stdDeviation="10" result="glow"></feGaussianBlur>
+                <feTurbulence type="fractalNoise" baseFrequency="0 0.1" numOctaves="2" seed="2" stitchTiles="noStitch"
+                    x="-30%" y="-30%" width="160%" height="160%" result="noise"></feTurbulence>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" data-min-scale="0" data-max-scale="50"
+                    xChannelSelector="R" yChannelSelector="B" x="-30%" y="-30%" width="160%" height="160%"
+                    filterUnits="userSpaceOnUse" result="displacement"></feDisplacementMap>
+                <feMerge>
+                    <feMergeNode in="glow"></feMergeNode>
+                    <feMergeNode in="displacement"></feMergeNode>
+                </feMerge>
+            </filter>
+        </defs>
+    </svg>
+    <main>
+        <nav class="main__nav-bar">
+            <ul class="main__nav-title">
+              <li><a href="/index.html" class="mobile__hide" target="_blank">#the beguiling allure of the sirens</a></li>
+              <li><a href="/poem.html" "="">#jump to poem</a></li>
+              </ul>
+              <ul class=" main__nav-list">
+              <li class="main__nav-item"><a href="#">#made by</a></li>
+              <li class="main__nav-item"><a href="#">#tanisha shaw</a></li>
+            </ul>
+            <div class="main__nav-ham">
+              <span class="main__nav-ham-bar"></span>
+              <span class="main__nav-ham-bar"></span>
+            </div>
+          </nav>
+        <header class="intro">
+            <h1 class="intro__title"><span style="font-family: Young Morin; font-size: 10vw;">R</span>each Out <span
+                    style="font-family: Young Morin; font-size: 10vw;"> Y</span>our <span
+                    style="font-family: Young Morin; font-size: 10vw;">H</span>and <span
+                    style="font-family: Young Morin; font-size: 10vw;">T</span>owards <br>The <span
+                    style="font-family: Young Morin; font-size: 10vw;">S</span>iren Now</h1>
+            <p class="intro__hint">To Continue</p>
+        </header>
+        <br><br> <br><br> <br><br>
+        <svg class="svgtext svgtext--1" data-filter-type="blur" width="120%" preserveAspectRatio="xMidYMid meet"
+            viewBox="0 0 1000 200">
+            <path id="text-curve1" d="M 0 100 Q 250 200 500 100 Q 750 0 1000 100" fill="none"></path>
+            <text filter="url(#blur)">
+                <textPath href="#text-curve1" startOffset="4440.733077883178">
+                    First, to the Sirens ye shall come, that taint;
+                    The minds of all men, whom they acquaint
+
+
+                </textPath>
+            </text>
+        </svg>
+
+        <svg class="svgtext" data-filter-type="blur" width="120%" preserveAspectRatio="xMidYMid meet"
+            viewBox="0 0 1000 200">
+            <path id="text-curve11" d="M 0 100 Q 250 0 500 100 Q 750 200 1000 100" fill="none"></path>
+            <text filter="url(#blur)">
+                <textPath href="#text-curve11" startOffset="5129.137976906516">
+                    With their attractions. Whosoever shall;
+                    (For want of knowledge mov’d) but heare the call
+
+                </textPath>
+            </text>
+        </svg>
+
+        <svg class="svgtext svgtext--2" data-filter-type="distortion" width="120%" preserveAspectRatio="xMidYMid meet"
+            viewBox="0 0 1000 200">
+            <path id="text-curve2" d="M 0 50 Q 100 0 200 100 Q 300 200 650 50 C 750 0 750 150 1000 50" fill="none">
+            </path>
+            <text filter="url(#distortionFilter)">
+                <textPath href="#text-curve2" startOffset="11286.295704235381">
+                    Of any Siren: he will so despise;
+
+                    Both wife and children, for their sorceries,
+
+                </textPath>
+            </text>
+        </svg>
+
+        <svg class="svgtext" data-filter-type="distortion" width="120%" preserveAspectRatio="xMidYMid meet"
+            viewBox="0 0 1000 300">
+            <path id="text-curve22" d="M 0 200 Q 150 300 300 200 Q 700 0 1000 150" fill="none"></path>
+            <text filter="url(#distortionFilter)">
+                <textPath href="#text-curve22" startOffset="11870.571912375146">
+                    That never home turnes his affections streame;
+                    Nor they take joy in him, nor he in them.
+                </textPath>
+            </text>
+        </svg>
+
+        <svg class="svgtext svgtext--3" data-filter-type="blur" width="120%" preserveAspectRatio="xMidYMid meet"
+            viewBox="0 0 1000 200">
+            <path id="text-curve3" d="M 0 150 Q 200 50 500 50 Q 800 50 1000 150 " fill="none"></path>
+            <text filter="url(#blur)">
+                <textPath href="#text-curve3" startOffset="16150.80403934392">
+                    The Sirens will so soften with their song;
+
+
+                </textPath>
+            </text>
+        </svg>
+
+        <svg class="svgtext svgtext--3" data-filter-type="blur" width="120%" preserveAspectRatio="xMidYMid meet"
+            viewBox="0 0 1000 200">
+            <path id="text-curve4" d="M 0 150 Q 200 50 500 50 Q 800 50 1000 150 " fill="none"></path>
+            <text filter="url(#blur)">
+                <textPath href="#text-curve4" startOffset="16841.11870411266">
+                    (Shrill, and in sensuall appetite so strong)
+                </textPath>
+            </text>
+        </svg>
+
+        <svg class="svgtext svgtext--3" data-filter-type="blur" width="120%" preserveAspectRatio="xMidYMid meet"
+            viewBox="0 0 1000 200">
+            <path id="text-curve5" d="M 0 150 Q 200 50 500 50 Q 800 50 1000 150 " fill="none"></path>
+            <text filter="url(#blur)">
+                <textPath href="#text-curve5" startOffset="17531.435195777634">
+                    His loose affections, that he gives them heed.
+                    And then observe: They sit amidst a meade:
+
+                </textPath>
+            </text>
+        </svg>
+
+        <svg class="svgtext" data-filter-type="blur" width="120%" preserveAspectRatio="xMidYMid meet"
+            viewBox="0 0 1000 200">
+            <path id="text-curve11" d="M 0 100 Q 250 0 500 100 Q 750 200 1000 100" fill="none"></path>
+            <text filter="url(#blur)">
+                <textPath href="#text-curve11" startOffset="5129.137976906516">
+
+                    And round about it runnes a hedge or wall;
+                    Of dead mens bones: their withered skins and all
+
+
+                </textPath>
+            </text>
+        </svg>
+
+        <svg class="svgtext svgtext--2" data-filter-type="distortion" width="120%" preserveAspectRatio="xMidYMid meet"
+        viewBox="0 0 1000 200">
+        <path id="text-curve2" d="M 0 50 Q 100 0 200 100 Q 300 200 650 50 C 750 0 750 150 1000 50" fill="none">
+        </path>
+        <text filter="url(#distortionFilter)">
+            <textPath href="#text-curve2" startOffset="11286.295704235381">
+                Hung all along upon it; and these men; 
+                Were such as they had fawnd into their Fen,
+
+            </textPath>
+        </text>
+    </svg>
+
+        <svg class="svgtext svgtext--4" data-filter-type="blur" width="120%" preserveAspectRatio="xMidYMid meet"
+            viewBox="0 0 1000 200">
+            <path id="textcircle" d="M 0 0 Q 200 150 500 150 Q 850 150 1000 0 " fill="none"></path>
+            <text filter="url(#blur)">
+                <textPath href="#textcircle" startOffset="20991.261782587226">
+                    And then their skins hung on the hedge of bones.
+                </textPath>
+            </text>
+        </svg>
+        <div class="grid-wrap">
+            <div class="grid">
+                <div class="grid__item">
+
+                </div>
+                <div class="grid__item">
+                </div>
+                <div class="grid__item">
+                    The siren’s melody rises with the tide, whispering through the waves— <br><br>
+                    <p style="font-style:italic;">Will you let the sea pull you in?</p>
+                </div>
+                <div class="grid__item" style="word-spacing: 2vw;">
+                    <p>
+                        <a href="yes.html">#yes</a> <a href="yes.html">#yes</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <footer class="frame">
+            <div>
+             <i>Hilarious that you think you have a choice.</i>
+            </div>
+        </footer>
+    </main>
+
+
+    <script src="poem.js"></script>
+
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration>
+
+</html>
