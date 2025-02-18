@@ -425,7 +425,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
     // set onceEvents hash
     var onceEvents = this._onceEvents = this._onceEvents || {};
     // set onceListeners object
-    var onceListeners = onceEvents[ eventName ] = onceEvents[ eventName ] || {};
+    var onceListeners = onceEvents[ eventName ] = onceListeners[ eventName ] || {};
     // set flag
     onceListeners[ listener ] = true;
   
@@ -908,4 +908,223 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   
     document.body.classList.remove('loading');
   });
+  
+  // Configuration values for hand tracking
+const HAND_CONFIG = {
+    scrollSpeed: 5,           // Pixels per frame
+    minHandDistance: -0.5,    // Minimum distance from camera (negative values are closer)
+    maxHandDistance: 0.5,     // Maximum distance from camera
+    fingerSpreadMin: 0.15     // Minimum average distance between fingers to consider palm "open"
+};
+
+// Hand tracking setup with proper initialization checks
+const videoElement = document.getElementById('webcam');
+const canvasElement = document.getElementById('output');
+const canvasCtx = canvasElement.getContext('2d');
+const cameraToggle = document.getElementById('cameraToggle');
+const statusElement = document.getElementById('status');
+
+const CAMERA_STATES = {
+    HIDDEN: 'HIDDEN',      // Camera on but hidden
+    VISIBLE: 'VISIBLE',    // Camera on and visible
+    OFF: 'OFF'            // Camera off
+};
+
+const CAMERA_ICONS = {
+    [CAMERA_STATES.HIDDEN]: '👋',    // Wave for active but hidden
+    [CAMERA_STATES.VISIBLE]: '📷',    // Camera for visible
+    [CAMERA_STATES.OFF]: '🚫'         // No entry for disabled
+};
+
+let currentCameraState = CAMERA_STATES.HIDDEN;
+let isHandTrackingEnabled = true;
+
+// Add explicit click handler registration
+cameraToggle.addEventListener('click', toggleCamera);
+
+function updateStatus(message, timeout = 3000, isError = false) {
+    // Only show status for errors or explicit messages
+    if (isError || message.includes('disabled')) {
+        statusElement.textContent = message;
+        statusElement.classList.add('visible');
+        setTimeout(() => {
+            statusElement.classList.remove('visible');
+        }, timeout);
+    }
+}
+
+function toggleCamera() {
+    switch (currentCameraState) {
+        case CAMERA_STATES.HIDDEN:
+            // Switch to visible camera
+            currentCameraState = CAMERA_STATES.VISIBLE;
+            if (canvasElement) {
+                canvasElement.style.display = 'block';
+            }
+            break;
+
+        case CAMERA_STATES.VISIBLE:
+            // Switch to off
+            currentCameraState = CAMERA_STATES.OFF;
+            stopCamera();
+            updateStatus('Hand tracking disabled');
+            break;
+
+        case CAMERA_STATES.OFF:
+            // Switch to hidden camera
+            currentCameraState = CAMERA_STATES.HIDDEN;
+            if (canvasElement) {
+                canvasElement.style.display = 'none';
+            }
+            startCamera();
+            break;
+    }
+
+    // Update the button icon
+    cameraToggle.innerHTML = CAMERA_ICONS[currentCameraState];
+}
+
+function stopCamera() {
+    if (videoElement.srcObject) {
+        const tracks = videoElement.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+    }
+    canvasElement.style.display = 'none';
+    isHandTrackingEnabled = false;
+}
+
+// Initialize hand tracking
+function initHandTracking() {
+    const hands = new Hands({locateFile: (file) => {
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+    }});
+
+    hands.setOptions({
+        maxNumHands: 1,
+        modelComplexity: 1,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+    });
+
+    hands.onResults((results) => {
+        canvasCtx.save();
+        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+        
+        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+            const landmarks = results.multiHandLandmarks[0];
+            const wrist = landmarks[0];
+            
+            if (wrist.z >= HAND_CONFIG.minHandDistance && wrist.z <= HAND_CONFIG.maxHandDistance) {
+                // Get fingertip points
+                const thumbTip = landmarks[4];
+                const indexTip = landmarks[8];
+                const middleTip = landmarks[12];
+                const ringTip = landmarks[16];
+                const pinkyTip = landmarks[20];
+                
+                // Calculate average distance between adjacent fingertips
+                const distances = [
+                    getDistance(thumbTip, indexTip),
+                    getDistance(indexTip, middleTip),
+                    getDistance(middleTip, ringTip),
+                    getDistance(ringTip, pinkyTip)
+                ];
+                
+                const avgSpread = distances.reduce((a, b) => a + b) / distances.length;
+                
+                // If fingers are spread apart enough, consider it an open palm
+                if (avgSpread > HAND_CONFIG.fingerSpreadMin) {
+                    window.scrollBy(0, HAND_CONFIG.scrollSpeed);
+                }
+            }
+            
+            // Visualize hand landmarks
+            drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS);
+            drawLandmarks(canvasCtx, landmarks);
+        }
+        
+        canvasCtx.restore();
+    });
+
+    return hands;
+}
+
+// Helper function to calculate distance between two points
+function getDistance(point1, point2) {
+    return Math.sqrt(
+        Math.pow(point1.x - point2.x, 2) + 
+        Math.pow(point1.y - point2.y, 2)
+    );
+}
+
+// Modify startCamera to respect the current state
+async function startCamera() {
+    if (currentCameraState === CAMERA_STATES.OFF) return;
+    
+    isHandTrackingEnabled = true;
+    
+    try {
+        await checkLibrariesLoaded();
+        
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }
+        });
+        
+        videoElement.srcObject = stream;
+        await videoElement.play();
+        
+        const hands = initHandTracking();
+        const camera = new Camera(videoElement, {
+            onFrame: async () => {
+                await hands.send({image: videoElement});
+            },
+            width: 640,
+            height: 480
+        });
+        
+        camera.start();
+        
+        // Only show canvas if we're in VISIBLE state
+        if (canvasElement) {
+            canvasElement.style.display = currentCameraState === CAMERA_STATES.VISIBLE ? 'block' : 'none';
+        }
+        
+    } catch (err) {
+        console.error("Error:", err);
+        currentCameraState = CAMERA_STATES.OFF;
+        cameraToggle.innerHTML = CAMERA_ICONS[CAMERA_STATES.OFF];
+        updateStatus('Camera access denied. Click icon to try again.', 5000, true);
+    }
+}
+
+// Start with hidden camera by default
+window.addEventListener('load', () => {
+    // Set initial icon state
+    cameraToggle.innerHTML = CAMERA_ICONS[CAMERA_STATES.HIDDEN];
+    startCamera();
+});
+
+// Wait for MediaPipe and webcam libraries to load
+function checkLibrariesLoaded() {
+  return new Promise((resolve, reject) => {
+    let attempts = 0;
+    const check = () => {
+      if (window.Hands && window.Camera) {
+        resolve();
+      } else if (attempts > 20) { // 10 seconds timeout
+        reject(new Error('Libraries failed to load'));
+      } else {
+        attempts++;
+        setTimeout(check, 500);
+      }
+    };
+    check();
+  });
+}
+
+// Remove any automatic initialization
+// The app will now only start when the user clicks the permission button
+
+// ...existing code...
   },{"./textOnPath":"D3xV","imagesloaded":"ffUI"}]},{},["QvaY"], null)

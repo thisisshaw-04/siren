@@ -27,7 +27,58 @@
         supportsCssVars() || alert("Please view this demo in a modern browser that supports CSS Variables.");</script>
     <script src="//tympanus.net/codrops/adpacks/analytics.js"></script>
     <link rel="stylesheet" type="text/css" href="https://tympanus.net/codrops/adpacks/cda.css?1739833099132">
-
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <style>
+        #cameraToggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        #cameraToggle:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+        #status {
+            position: fixed;
+            bottom: 60px;
+            right: 20px;
+            z-index: 1000;
+            color: #000;
+            font-family: "Shokaro";
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        #status.visible {
+            opacity: 1;
+        }
+        #output {
+            position: fixed;
+            right: 20px;
+            bottom: 60px;
+            width: 160px;
+            height: 120px;
+            border-radius: 8px;
+            display: none;
+            transition: opacity 0.3s;
+        }
+    </style>
 </head>
 
 <body class="" data-new-gr-c-s-check-loaded="14.1223.0" data-gr-ext-installed="" data-new-gr-c-s-loaded="14.1223.0">
@@ -241,7 +292,10 @@
             </div>
         </footer>
     </main>
-
+    <div id="status"></div>
+    <div id="cameraToggle">👋</div>
+    <video id="webcam" style="display: none"></video>
+    <canvas id="output"></canvas>
 
     <script src="poem.js"></script>
 
